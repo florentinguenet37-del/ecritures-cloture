@@ -1,0 +1,17 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+.next-static/
+*.log
+.env
+.env.local
+.env.*.local
+
+# OS/Editors
+.DS_Store
+*.swp
+.idea/
+.vscode/*
+!.vscode/extensions.json
