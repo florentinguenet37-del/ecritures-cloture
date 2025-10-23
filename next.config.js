@@ -1,6 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  // garde le rendu Next par défaut (pas d'export statique ici)
-  reactStrictMode: true
+module.exports = {
+  // rien de spécial requis pour Tailwind v4
 };
-module.exports = nextConfig;

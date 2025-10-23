@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Tailwind v4 — variant dark basée sur la classe .dark */
 @custom-variant dark (&:is(.dark *));
 
 /* --- (facultatif) utilitaires d’animation minimalistes --- */

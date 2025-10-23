@@ -26,6 +26,7 @@ import { Slider } from "@/components/ui/slider";
 
 // Types
  type Side = "Debit" | "Credit";
+ type InputRow = { account: string; amount: string; side: '' | Side };
  type EntryKey = "FNP" | "AAR" | "CCA" | "FAE" | "AAE" | "PCA";
  type Line = { account: string; label: string; side: Side; formula: (p: Params) => number };
  type Params = { amountHT: number; tvaRate: number };
@@ -366,14 +367,16 @@ function ExerciseEngine() {
   const [validated, setValidated] = useState(false);
 
   // Re-génère un scénario quand difficulté ou seed change
-  React.useEffect(()=>{
+  React.useEffect(() => {
   const next = makeScenario(difficulty);
   setEx(next);
-  // initialise inputs selon nb de lignes attendues
-  const blanks = buildExpectedLines(next).map(l => ({
-    account: difficulty === 'facile' ? l.account : '',
-    amount: '',
-    side: (difficulty === 'facile' || difficulty === 'moyen') ? '' : undefined,
+  const blanks: InputRow[] = buildExpectedLines(next).map((l) => ({
+    account: difficulty === "facile" ? l.account : "",
+    amount: "",
+    // en facile/moyen: valeur vide typée; en difficile: on peut préremplir avec le bon sens
+    side: (difficulty === "facile" || difficulty === "moyen")
+      ? ('' as const)
+      : (l.side as Side),
   }));
 
   setInputs(blanks);
@@ -409,9 +412,9 @@ function ExerciseEngine() {
 
   const allGood = validated && accountsOk() && sidesOk() && amountsOk();
 
-  const setInput = (i:number, patch: Partial<{account:string; amount:string; side: '' | Side}>)=>{
-    setInputs(prev=> prev.map((row, idx)=> idx===i? { ...row, ...patch } : row));
-  };
+  const setInput = (i: number, patch: Partial<InputRow>) => {
+    setInputs(prev => prev.map((row, idx) => (idx === i ? { ...row, ...patch } : row)));
+};
 
   return (
     <Card className="rounded-2xl">
@@ -439,10 +442,14 @@ function ExerciseEngine() {
                 <Label>Sens</Label>
                 {(difficulty === 'facile' || difficulty === 'moyen') ? (
                   <select
-                    className="mt-2 w-full border rounded-xl p-2"
-                    value={inputs[i]?.side || ''}
-                    onChange={(e) => setInput(i, { side: e.target.value as Side | '' })}
-                  >
+  className="mt-2 w-full border rounded-xl p-2"
+  value={inputs[i]?.side ?? ''}       // toujours '' | 'Debit' | 'Credit'
+  onChange={(e) =>
+    setInput(i, {
+      side: e.target.value === '' ? ('' as const) : (e.target.value as Side),
+    })
+  }
+>
                     <option value="">— choisir —</option>
                     <option value="Debit">Débit</option>
                     <option value="Credit">Crédit</option>
